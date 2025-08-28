@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { removeUser } from "../Utils/userSlice";
 import axios from "axios";
 import { BASE_URL } from "../Utils/environment";
+import { removeFeed } from "../Utils/feedSlice";
+import { removeRequests } from "../Utils/requestSlice";
+import { removeConnection } from "../Utils/connectionsSlice";
 
 const Navbar = () => {
   const user = useSelector((store) => store.user); 
@@ -16,6 +19,12 @@ const Navbar = () => {
       BASE_URL + "/logout",{},
       { withCredentials:true}) 
       dispatch(removeUser());
+      dispatch(removeFeed());
+      dispatch(removeRequests());
+      dispatch(removeConnection());
+
+
+      
       navigate("/login")
     }catch(e){
       console.error(e);
@@ -49,8 +58,17 @@ const Navbar = () => {
             >
               <li>
                 <Link to={'/profile'} className="justify-between">
-                  Profile
-                  <span className="badge">New</span>
+                  Profile 
+                </Link>
+              </li>
+              <li>
+                <Link to={'/connections'} className="justify-between">
+                  Friends 
+                </Link>
+              </li>
+              <li>
+                <Link to={'/requests'} className="justify-between">
+                  Connection Requests 
                 </Link>
               </li>
               <li>

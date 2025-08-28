@@ -4,9 +4,10 @@ import axios from "axios";
 import { BASE_URL } from "../Utils/environment";
 import { useDispatch } from "react-redux";
 import { addUser } from "../Utils/userSlice";
+import { capitalize } from "../Utils/helper";
 
 const EditProfile = ({ user }) => {
-    const dispatch=useDispatch(); 
+  const dispatch=useDispatch(); 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [age, setAge] = useState("");
@@ -14,6 +15,8 @@ const EditProfile = ({ user }) => {
   const [photosUrl, setPhotosUrl] = useState("");
   const [gender, setGender] = useState("");
   const [about, setAbout] = useState("");
+  const [showToast, setShowToast] = useState(false);
+
 
   useEffect(() => {
     if (user) {
@@ -22,7 +25,7 @@ const EditProfile = ({ user }) => {
       setAge(user.age || "");
       setSkills(user.skills || "");
       setPhotosUrl(user.photosUrl || "");
-      setGender(user.gender || "");
+      setGender(capitalize(user.gender) || "");
       setAbout(user.about || "");
     }
   }, [user]);
@@ -42,6 +45,10 @@ const EditProfile = ({ user }) => {
     );
 
     dispatch(addUser(res?.data?.data))
+    setShowToast(true);
+    setTimeout(()=>{
+      setShowToast(false);
+    },2000)
     }
     catch(e){
         setError(e?.response?.data?.message || "Something went wrong");
@@ -51,6 +58,7 @@ const EditProfile = ({ user }) => {
   const [error, setError] = useState("");
 
   return (
+    (user &&
     <div className="min-h-screen bg-base-200 p-4 flex justify-center items-start gap-8">
       <div className="flex justify-center items-center mx-10">
         <div className="card w-96 bg-base-100 shadow-xl">
@@ -90,14 +98,18 @@ const EditProfile = ({ user }) => {
               <label className="label">
                 <span className="label-text">Gender</span>
               </label>
-              <select defaultValue={gender} onChange={(e)=>setGender(e.target.value)} className="input input-bordered w-full">
-                <option disabled={true}>Select your gender</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
-                </select>
+              <select 
+                value={gender} 
+                onChange={(e) => setGender(e.target.value)} 
+                className="input input-bordered w-full"
+              >
+                <option value="" disabled>Select your gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
             </div>
-            <div className="form-control mb-2">
+            <div className="form-control mb-2 remove-arrow">
               <label className="label">
                 <span className="label-text">Age</span>
               </label>
@@ -165,9 +177,9 @@ const EditProfile = ({ user }) => {
           </div>
         </div>
       </div>
-      <div className="">
+      <div className=" ">
         
-      <h2 className="card-title text-center justify-center text-2xl font-semibold mb-2">
+      <h2 className="card-title bg-base-300  text-center justify-center text-2xl font-semibold mb-2">
               Your User Card 
             </h2>
       <div className="flex justify-center items-center mb-5 ">
@@ -182,9 +194,15 @@ const EditProfile = ({ user }) => {
                 skills,
             }}
             />
+            {showToast && <div className="toast toast-end toast-end"> 
+            <div className="alert alert-success">
+              <span>Profile Update successfully.</span>
             </div>
+            </div>}
+          </div>
         </div>
     </div>
+    )
   );
 };
 

@@ -5,23 +5,31 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addFeed } from '../Utils/feedSlice'
 import UserCard from './UserCard'
 
-const Feed = () => {
-  console.log("FeedComponent loads")
+const Feed = () => { 
   const feed= useSelector((store)=>store.feed)
   const dispatch=useDispatch();
 
   const getFeed=async ()=>{
     if(feed) return;
-    const response =await axios.get(BASE_URL + "/user/feed",{
-      withCredentials:true,
-    }); 
-    dispatch(addFeed(response.data.users))
+    try{
+      const response =await axios.get(BASE_URL + "/user/feed",{
+        withCredentials:true,
+      }); 
+      dispatch(addFeed(response.data.users))
+    }catch(err){
+      console.error(err);
+    }
     // TODO handle error 
   }
   
   useEffect(()=>{
     getFeed();
   },[])
+
+  if(!feed) return;
+  if(feed.length===0) return (<div className="flex flex-col justify-center items-center mx-auto my-10">
+      <h1 className="text-3xl text-white font-bold">No More Users</h1>
+      </div>)
   
   return (
     feed && (
